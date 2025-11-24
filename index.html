@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具小站</title>
+    <style>
+        /* --- 全局重置与基础样式 --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            /* 柔和的蓝紫色渐变背景 */
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        /* --- 主容器 --- */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        /* --- 标题部分 --- */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        p.subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* --- 双列网格布局 --- */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 强制双列 */
+            gap: 25px; /* 卡片之间的间距 */
+        }
+
+        /* --- 卡片样式 --- */
+        .tool-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-decoration: none; /* 去掉链接下划线 */
+            color: inherit;
+            transition: all 0.3s ease; /* 动画过渡 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 鼠标悬停效果 */
+        .tool-card:hover {
+            transform: translateY(-5px); /* 向上浮动 */
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15); /* 加深阴影 */
+        }
+
+        /* 卡片顶部的装饰条 */
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+        }
+
+        /* 为不同的卡片设置不同的装饰色 */
+        .card-grade::before { background: #3498db; } /* 蓝色 */
+        .card-baby::before { background: #ff9a9e; }  /* 粉色 */
+
+        /* --- 卡片内容 --- */
+        .icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            line-height: 1.5;
+        }
+
+        /* --- 移动端适配 --- */
+        @media (max-width: 600px) {
+            .tool-grid {
+                grid-template-columns: 1fr; /* 手机上变为单列 */
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🚀 工具小站</h1>
+            <p class="subtitle">便捷实用的在线小工具集合</p>
+        </header>
+
+        <div class="tool-grid">
+            <a href="./score-analysis.html" class="tool-card card-grade">
+                <div class="icon">📊</div>
+                <div class="card-title">成绩分析</div>
+                <div class="card-desc">
+                    快速录入数据，生成多维度的成绩分析报表与图表。
+                </div>
+            </a>
+
+            <a href="./pregnant-date.html" class="tool-card card-baby">
+                <div class="icon">🤰</div>
+                <div class="card-title">孕期计算器</div>
+                <div class="card-desc">
+                    计算预产期、追踪宝宝发育周数及重要产检提醒。
+                </div>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

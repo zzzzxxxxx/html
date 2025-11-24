@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>怀孕日期计算器</title>
+<!--        <script src="https://cdn.bootcdn.net/ajax/libs/lunar-javascript/1.7.3/lunar.min.js" defer></script>-->
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .description {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        /* 日期选择区域 */
+        .date-picker {
+            display: flex;
+            align-items: center; /* 垂直居中 */
+            gap: 10px; /* 文本与输入框间距 */
+            margin-bottom: 10px;
+        }
+
+        /* 生产日期标签 */
+        .date-picker label {
+            font-size: 16px;
+            font-weight: 500;
+            color: #2c3e50;
+            padding: 4px 8px;
+            border-radius: 6px;
+            min-width: 100px; /* 标签加宽，避免换行 */
+            text-align: right; /* 文字靠右对齐 */
+        }
+
+        /* 农历和星座信息 */
+        .date-info {
+            display: flex;
+            justify-content: flex-end; /* 右对齐 */
+            gap: 10px;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .date-info div {
+            background-color: rgba(52, 152, 219, 0.1); /* 浅蓝色高亮 */
+            padding: 3px 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            color: #2c3e50;
+        }
+
+        .date-info i {
+            margin-right: 4px;
+        }
+
+
+        input[type="date"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="date"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .results {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .result-date {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .maternity-leave {
+            border-left: 5px solid #3498db;
+        }
+
+        .pregnancy-range {
+            border-left: 5px solid #f39c12;
+            background-color: rgba(243, 156, 18, 0.1) !important;
+        }
+
+        .optimal-range {
+            border-left: 5px solid #2ecc71;
+            background-color: rgba(46, 204, 113, 0.1) !important;
+        }
+
+        .color-indicator {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+
+        .light-green {
+            background-color: #2ecc71;
+        }
+
+        .dark-yellow {
+            background-color: #f39c12;
+        }
+
+        .instructions {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #34495e;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>怀孕日期计算器</h1>
+        <p class="description">选择一个日期，计算产假休息时间和怀孕时间范围</p>
+
+        <div class="date-picker">
+            <label for="selectedDate">生产日期：</label>
+            <input type="date" id="selectedDate">
+        </div>
+
+        <div class="date-info">
+            <div class="lunar-date" id="selectedLunarDate"><i class="fas fa-moon"></i> 农历: -</div>
+            <div class="zodiac-sign" id="selectedZodiac"><i class="fas fa-star"></i> 星座: -</div>
+        </div>
+
+
+        <div class="results">
+
+            <div class="result-item maternity-leave">
+                <div class="result-title">产假结束日期（158天后）：</div>
+                <div class="result-date" id="maternityLeaveDate">-</div>
+            </div>
+
+            <div class="result-item pregnancy-range">
+                <div class="result-title">
+                    <span class="color-indicator dark-yellow"></span>
+                    怀孕时间范围（37周 ~ 42周+7天前）：
+                </div>
+                <div class="result-date" id="pregnancyRange">-</div>
+            </div>
+
+            <div class="result-item optimal-range">
+                <div class="result-title">
+                    <span class="color-indicator light-green"></span>
+                    怀孕最佳时间范围（39周 ~ 40周+7天前）：
+                </div>
+                <div class="result-date" id="optimalRange">-</div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <p><strong>使用说明：</strong> 选择一个日期后，系统会自动计算产假日期和怀孕时间范围。浅绿色区域表示可能的怀孕时间，深黄色区域表示最佳怀孕时间。</p>
+        </div>
+    </div>
+
+    <script>
+        // 缓存外部 JS 加载状态
+        let externalJsLoaded = false;
+        let externalJsPromise = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectedDateInput = document.getElementById('selectedDate');
+            const maternityLeaveDate = document.getElementById('maternityLeaveDate');
+            const pregnancyRange = document.getElementById('pregnancyRange');
+            const optimalRange = document.getElementById('optimalRange');
+            const selectedLunarDate = document.getElementById('selectedLunarDate');
+            const selectedZodiac = document.getElementById('selectedZodiac');
+
+            // 设置默认日期为今天
+            const today = new Date();
+            const formattedToday = today.toISOString().split('T')[0];
+            selectedDateInput.value = formattedToday;
+
+            // 初始计算
+            calculateDates();
+
+            // 添加日期更改事件监听
+            selectedDateInput.addEventListener('change', calculateDates);
+
+            function calculateDates() {
+                const selectedDate = new Date(selectedDateInput.value);
+
+                if (isNaN(selectedDate.getTime())) {
+                    return; // 无效日期
+                }
+
+                // 更新星座
+                const zodiac = getZodiacSign(selectedDate);
+                selectedZodiac.innerHTML = `<i class="fas fa-star"></i> 星座: ${zodiac}`;
+
+                // 计算产假日期（158天后）
+                const maternityLeave = new Date(selectedDate);
+                maternityLeave.setDate(maternityLeave.getDate() + 158);
+                maternityLeaveDate.textContent = formatDate(maternityLeave);
+
+                // 计算怀孕时间范围（37周-42周+7天前）
+                const pregnancyStart = new Date(selectedDate);
+                pregnancyStart.setDate(pregnancyStart.getDate() - 43 * 7);
+
+                const pregnancyEnd = new Date(selectedDate);
+                pregnancyEnd.setDate(pregnancyEnd.getDate() - 37 * 7);
+
+                pregnancyRange.textContent = `${formatDate(pregnancyStart)} （过期妊娠）至 ${formatDate(pregnancyEnd)} （早期）`;
+
+                // 计算最佳时间范围（39周-40周+7天前）
+                const optimalStart = new Date(selectedDate);
+                optimalStart.setDate(optimalStart.getDate() - 41 * 7);
+
+                const optimalEnd = new Date(selectedDate);
+                optimalEnd.setDate(optimalEnd.getDate() - 39 * 7);
+
+                optimalRange.textContent = `${formatDate(optimalStart)} 至 ${formatDate(optimalEnd)} `;
+
+
+                // 更新农历日期
+                loadExternalJSOnce().then(() => {
+                    // 外部 JS 加载完成或已经存在，直接执行控件更新
+                    const lunar = getLunarDate(selectedDate);
+                    selectedLunarDate.innerHTML = `<i class="fas fa-moon"></i> 农历: ${lunar}`;
+                  }).catch(err => {
+                    console.error(err);
+                    document.getElementById('status').innerText = "❌ JS 加载失败";
+                  });
+
+            }
+
+            // 模拟异步 JS 加载
+            function loadExternalJSOnce() {
+              if (externalJsLoaded) {
+                // 已经加载过，直接同步执行
+                return Promise.resolve();
+              }
+              if (externalJsPromise) {
+                // 正在加载中，返回同一个 Promise
+                return externalJsPromise;
+              }
+
+              // 第一次加载，异步加载 JS
+              externalJsPromise = new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = "https://cdn.bootcdn.net/ajax/libs/lunar-javascript/1.7.3/lunar.min.js";
+                script.onload = () => {
+                  externalJsLoaded = true;
+                  resolve();
+                };
+                script.onerror = () => reject("加载失败");
+                document.head.appendChild(script);
+              });
+
+              return externalJsPromise;
+            }
+
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // 使用lunar-calendar库获取农历日期
+            function getLunarDate(date){
+                // 公历
+                const solar = Solar.fromDate(date);
+
+                // 转农历
+                const lunar = solar.getLunar();
+
+                // 组装结果
+                return lunar.getMonthInChinese() + "月" + lunar.getDayInChinese() ;
+            }
+
+
+            // 获取星座
+            function getZodiacSign(date) {
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+
+                const signs = [
+                    ["摩羯座", 20], // 1/20 之前是摩羯
+                    ["水瓶座", 19],
+                    ["双鱼座", 21],
+                    ["白羊座", 20],
+                    ["金牛座", 21],
+                    ["双子座", 21],
+                    ["巨蟹座", 23],
+                    ["狮子座", 23],
+                    ["处女座", 23],
+                    ["天秤座", 23],
+                    ["天蝎座", 22],
+                    ["射手座", 22],
+                    ["摩羯座", 22]  // 12/22 之后
+                ];
+                return day < signs[month - 1][1] ? signs[month - 1][0] : signs[month][0];
+            }
+        });
+    </script>
+</body>
+</html>
